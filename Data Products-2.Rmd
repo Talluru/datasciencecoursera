@@ -1,0 +1,27 @@
+---
+title: "Week3-Assignment"
+author: "Gowtham Talluru"
+date: "July 12, 2017"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+install.packages("ggplot2", repos="http://cran.us.r-project.org")
+install.packages("plotly", repos="http://cran.us.r-project.org")
+library(plotly)
+library(ggplot2)
+```
+
+
+## Mileage vs Horse Power
+
+```{r plot, warning=FALSE, message=FALSE}
+
+
+
+plot_ly(mtcars, x=~mtcars$wt, y=~mtcars$mpg, mode= "markers",
+          color=as.factor(mtcars$cyl),
+          mode="markers")
+```
+

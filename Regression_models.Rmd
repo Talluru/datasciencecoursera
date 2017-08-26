@@ -1,0 +1,87 @@
+---
+title: "Regression models"
+author: "Gowtham Talluru"
+date: "January 21, 2017"
+output: word_document
+---
+##Executive Summary:
+The distibution of mpg between manual and auto transmission is shown in figure-1. By priliminary observation it can be observed that manul has more mileage than auto transmission. The statistical significance of this difference will be verified by the regression models.Three different models 
+i. model_nonscaled
+ii. model_scaled 
+iii. model_sign_var
+each with original attributes, scaled attributes and selected variables. It can be observed from the models that manual transmission vehicles has 2.9 mpg higher than similar automatic transmission vehicle but the p value of this coefficient is higher than 0.19 which indicates that it is not statistically significant.
+
+##Coefficients
+The coefficint for am(1-manual, 0-auto) is 2.9. It means manual transmission car will 
+have 2.9mpg higher than exactly similar automatic transmission car.
+
+##Models
+Three models are fitted
+i. model_nonscaled
+ii. model_scaled 
+iii. model_sign_var
+model_nonscaled uses original attributes whereas model_scaled used scaled and centered variables. model_sign_var uses variables with significance higher than certain limit.
+
+##Question of Interest
+It can be observed from the models that manual transmission vehicles has 2.9 mpg higher than similar automatic transmission vehicle but the p value of this coefficient is higher than 0.19 which indicates that it is not statistically significant.
+
+##Residual plot and diagnostics
+No significant trends are observed from the residual plots which indicates that the models
+are good.
+
+##Uncertainty
+The p value of beta realted to transimission is 0.19. It means that the probability of making
+a type-1 error with this estimate is 19%. 
+
+
+
+
+```{r cars, message=FALSE, warning=FALSE}
+library(glmnet)
+library(caret)
+data("mtcars")
+
+str(mtcars)
+
+#Comparision using boxplot
+boxplot(mpg~am, data=mtcars, main="Distribution of mpg", ylab="mpg", xlab=" 0-auto, 1-manual", col=c("red","blue"))
+
+# Converting numbers into factors
+mtcars$cyl<-as.factor(mtcars$cyl)
+mtcars$vs<-as.factor(mtcars$vs)
+mtcars$am<-as.factor(mtcars$am)
+mtcars$gear<-as.factor(mtcars$gear)
+mtcars$carb<-as.factor(mtcars$vs)
+
+#Centering and scaling the numeric parameters
+mtcars_scaled<-mtcars
+mtcars_scaled$disp<-(mtcars_scaled$disp-mean(mtcars_scaled$disp))/sd(mtcars_scaled$disp)
+mtcars_scaled$hp<-(mtcars_scaled$hp-mean(mtcars_scaled$hp))/sd(mtcars_scaled$hp)
+mtcars_scaled$drat<-(mtcars_scaled$drat-mean(mtcars_scaled$drat))/sd(mtcars_scaled$drat)
+mtcars_scaled$wt<-(mtcars_scaled$wt-mean(mtcars_scaled$wt))/sd(mtcars_scaled$wt)
+mtcars_scaled$qsec<-(mtcars_scaled$qsec-mean(mtcars_scaled$qsec))/sd(mtcars_scaled$qsec)
+
+
+
+
+```
+
+
+```{r quant}
+#Initial model without centering and scaling the data
+model_nonscaled<-lm(mpg~., data=mtcars)
+summary(model_nonscaled)
+par(mfrow=c(2,2))
+plot(model_nonscaled)
+
+model_scaled<-lm(mpg~., data = mtcars_scaled)
+model_sign_var<-lm(mpg~hp+wt+am+qsec+vs, data=mtcars_scaled)
+
+```
+
+```{r}
+summary(model_scaled)
+summary(model_sign_var)
+
+```
+

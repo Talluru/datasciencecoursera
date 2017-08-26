@@ -1,0 +1,91 @@
+---
+title: "Effect of Natural Calameties on People and Economy"
+author: "Gowtham Talluru"
+date: "September 22, 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+```
+## Summary
+This article is on the analysis on the effects of natural calamities in USA to people, property and crops. This article is based on the NOAA Storm data which records different kinds of nataral calamities occured in USA from 1950. The NOAA records all kinds of attributes associated with these events such as no. of fatalities, no. of people injured, property damage, crop damage, state, county etc. These data is used to answered two basic questions that are
+    1. Across the United States, which types of events are most harmful with respect to population health?
+    2. Across the United States, which types of events have the greatest economic consequences?
+
+
+## Synopsis
+The article is organised into three sections.
+      1. Data transformations to Raw NOAA data
+      2. Effects on People
+      3. Effects on Economy
+      4. Results
+
+
+##1. Data Import and processing
+```{r}
+Storm <- read.csv("D:/Coursera/Data Science/Rep research-2/repdata%2Fdata%2FStormData (1).csv/repdata%2Fdata%2FStormData (1).csv")
+# a. Bringing property damage into uniform units
+convet<-data.frame(term=c("","K","M","B"),value= c(0,1000,1000000,1000000000))
+Storm$prop_damage2<- Storm$PROPDMG*as.numeric(convet$value[match(Storm$PROPDMGEXP,convet$term)])
+Storm$crop_damage2<- Storm$CROPDMG*as.numeric(convet$value[match(Storm$CROPDMGEXP,convet$term)])
+Storm$tot_damage<- Storm$prop_damage2+Storm$crop_damage2
+
+
+
+#b. Normalizing Event type
+Storm$EVTYPE<-trimws(Storm$EVTYPE)
+Storm$EVTYPE<-toupper(Storm$EVTYPE)
+```
+
+1. The property damage and crop damage are not in same units in the dataframe. A few rows are in million, a few are in thousands and a few are in billions. So these numbers are muliplies with appropriate numbers to normalize them.
+
+2. The Event type in the data frame is in different formats (capital letters, redundant spaces etc). The space before and after are trimmed and all the event types are transformed to uppercase such that tapply can be applied on the dataframe effectively. 
+
+The data required much more processing. But I assume that for answering the given question the above transformations are enough.
+
+
+## 2. Effects on People
+```{r}
+#Importing Data
+
+fatalities<-tapply(Storm$FATALITIES,Storm$EVTYPE,sum) 
+injuries<-tapply(Storm$INJURIES,Storm$EVTYPE,sum)
+pop_health<-data.frame(names(fatalities),as.numeric(fatalities),as.numeric(injuries))
+names(pop_health)<-c("Event","Fatalities","Injuries")
+pop_health<-pop_health[order(fatalities,decreasing = T),]
+pop_top<-head(pop_health)
+par(mfrow=c(1,2))
+barplot(pop_top$Fatalities,legend.text = pop_top$Event,col = c("red","blue","yellow","green","pink"),main = "Fatalities count per event")
+barplot(pop_top$Fatalities,legend.text = pop_top$Event,col = c("red","blue","yellow","green","pink"),main = "Fatalities count per event")
+
+```
+
+It can be seen from the above plots that Tornados have highest effect on people in terms of Fatalities as well as Injuries. 
+
+## 3. Effects on Economy
+
+```{r}
+fatalities<-tapply(Storm$tot_damage,Storm$EVTYPE,sum) 
+pop_health<-data.frame(names(fatalities),as.numeric(fatalities))
+names(pop_health)<-c("Event","Fatalities")
+pop_health<-pop_health[order(fatalities,decreasing = T),]
+pop_top<-head(pop_health)
+par(mfrow=c(1,1))
+barplot(pop_top$Fatalities,legend.text = pop_top$Event,col = c("red","blue","yellow","green","pink"),main = "Eventwise Property Damage")
+
+```
+
+It can also be observed from the above barplot that tornados cause greatest economic consequences. In the above analysis both property damage and crop damage is considered.
+
+
+
+## 4. Results
+
+The results are very clear form the above data that TORNADOS in cause most damage to people, property and crops. The government should put more effort to predict tornados and to resquie people from these events. 
+
+
+
+
+

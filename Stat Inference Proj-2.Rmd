@@ -1,0 +1,86 @@
+---
+title: "Basic Inferential data Analysis"
+author: "Gowtham Talluru"
+date: "January 22, 2017"
+output: word_document
+---
+
+# 2. Inferential Data Analysis
+
+## 2.1 Exploratory data Analysis
+```{r tooth growth}
+data("ToothGrowth")
+summary(ToothGrowth)
+par(mfrow=c(1,2))
+boxplot(len~dose, data=ToothGrowth[ToothGrowth$supp=="OJ",],
+        main="Orange juice- Tooth growth", colour=c("red","green","blue"))
+
+boxplot(len~dose, data=ToothGrowth[ToothGrowth$supp=="VC",],
+        main="Ascorbic acid- Tooth growth", colour=c("red","green","blue"))
+```
+
+## 2.2: Hypothesis test
+```{r}
+#Comparing 0.5 and 1 dose of supp VC
+#Seperating each group
+VC_0.5<-ToothGrowth$len[((ToothGrowth$supp=="VC")&(ToothGrowth$dose==0.5))]
+VC_1<-ToothGrowth$len[((ToothGrowth$supp=="VC")&(ToothGrowth$dose==1))]
+
+#Comparing variance
+var.test(VC_0.5,VC_1)
+
+#Since p value is greater than 0.05 homogeneous variance can be assumed
+#t test for both groups
+
+t.test(VC_0.5,VC_1, var.equal = TRUE, paired = FALSE)
+
+```
+Since the p value is very small, it can be infered that there is significant 
+change in toothgrowth with increase in dose
+
+
+```{r}
+#Comparing 0.5 dose of supp OJ and VC
+#Seperating each group
+VC_0.5<-ToothGrowth$len[((ToothGrowth$supp=="VC")&(ToothGrowth$dose==0.5))]
+OJ_0.5<-ToothGrowth$len[((ToothGrowth$supp=="OJ")&(ToothGrowth$dose==0.5))]
+
+#Since p value is greater than 0.05 homogeneous variance can be assumed
+#t test for both groups
+
+t.test(VC_0.5,OJ_0.5, var.equal = TRUE, paired = FALSE)
+
+```
+
+
+## 2.3: Conclusion
+From the above two hypothesis testing it can be infered that there is statistically significant difference in tooth growth between 0.5 and 1 dose of VC(ascorbic acid) and 0.5 dose of OJ(orange juice) and VC( ascorbic acid). The difference in tooth growth of other groups can be infered similarly.
+
+
+
+
+```{r}
+
+library(rattle)
+data(segmentationOriginal)
+
+
+set.seed(125)
+train<-createDataPartition(segmentationOriginal$Case, p=0.8, list=FALSE)
+
+
+trainset<-segmentationOriginal[train,]
+testset<-segmentationOriginal[-train,]
+
+model<-train(Case~., data=trainset,method="rpart")
+
+
+model<-rpart(Case~., data=trainset)
+
+
+fancyRpartPlot(model)
+```
+
+
+
+

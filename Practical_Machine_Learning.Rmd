@@ -1,0 +1,68 @@
+---
+title: "ML"
+author: "Gowtham Talluru"
+date: "May 27, 2017"
+output: html_document
+---
+```{r, message=FALSE, warning=FALSE, include=FALSE}
+library(readxl)
+library(ggplot2)
+library(reshape2)
+library(rpart)
+library(party)                          # for visualizing trees
+library(partykit)                       # for visualizing trees
+library(rattle)      		                # fancy tree plot
+library(rpart.plot)	 
+library(caret)
+library(randomForest)
+```
+1. Initial data provide is processed and predictors with null values and NAs were removed. Similar predictors in
+test data were also removed.
+2. Predictors which doesnot have any significance in the prediction such as "Time Stamp", "ID NO", " Name" etc were
+dropped from the data
+
+```{r, message=TRUE, warning=FALSE, include=TRUE}
+Processed_data <- read_excel("D:/Coursera/Data Science/Practical machine learning/Pml/Processed data.xlsx", 
+     sheet = "Train-final")
+
+Processed_data$Slno<-NULL
+Processed_data$user_name<-NULL
+Processed_data$Data<-NULL
+Processed_data$classe<-as.factor(Processed_data$classe)
+```
+3. 20% test data set is seperated to evaluate the model built using Random forests
+```{r}
+train<-createDataPartition(Processed_data$classe, p=0.80,list=FALSE)
+
+Train_Data<-Processed_data[train,]
+Test_Data<-Processed_data[-train,]
+
+table(Train_Data$classe)
+table(Test_Data$classe)
+```
+
+4. Random forests model is selected because of its advantages such as feature selection, resistence to over fitting and ability to handle mulitcollinearity
+5. Random forests model is built using 500 trees and "m" (number of random predictors at each split) of 15
+6. The resultant confusion matrix using the seperated 20% test data is shown below.
+
+```{r, message=TRUE, warning=FALSE, include=TRUE}
+
+RF_model<-randomForest(classe~., data=Train_Data, ntree=500, mtry=15)
+p_RF<-predict(RF_model, newdata=Test_Data)
+
+confusionMatrix(p_RF, Test_Data$classe)
+```
+
+7. The classification of the 20 test instances are as follows
+
+```{r, message= TRUE, include = TRUE}
+finalTest <- read_excel("D:/Coursera/Data Science/Practical machine learning/Pml/Processed data.xlsx",
+sheet = "Test")
+
+testResult<-predict(RF_model, newdata=finalTest)
+testResult
+```
+
+
+
+

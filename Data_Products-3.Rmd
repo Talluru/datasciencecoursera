@@ -1,0 +1,63 @@
+---
+title: "Demonstration of Central limit Theorem"
+author: "Gowtham Talluru"
+date: "July 12, 2017"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Brief about Central Limit Theorem (CLT)
+- Named after Russian Mathematician Aleksandr Lyapunov.
+- CLT states that sum of independent and identically distributed random variables with
+  finite variances will tend to a normal distribution as the number of variables grows.
+
+## Methodology
+
+- The Population Size, mean and standard deviation are taken Input
+- A Normal distribution is generated using above inputs using rnorm function
+- The slider can interactively get the value of sample size
+- The mean of 100 random sample sizes are plotted in bottom histogram to demonstrate 
+  central limit theorem
+
+## Sample Code
+
+```{r cars, echo = TRUE, message=FALSE, fig.show= 'hide'}
+    x <- rnorm(1000, 100, 20)  # Population Distribution
+
+    z<-data.frame()   # Sample mean data frame
+    for(i in 1:100){
+    y <- sample(1:1000, 30, replace = F)
+    sampleMean<- mean(x[y])
+    z[i,1] <- sampleMean
+        hist(x, main="Population distribution of mean=100 and sd=100", 
+         col = 'red',
+         xlim=c(40, 160))
+
+    hist(z[,1], main="Sample mean Distribution  n=30", col = 'blue',
+         xlim=c(40, 160))
+    }
+
+```
+
+## Population and Sample Distribution
+
+```{r plots, echo=FALSE}
+    par(mfrow=c(1,2))
+    hist(x, main="Population of mean=100 and sd=100", 
+         col = 'red',
+         xlim=c(40, 160))
+
+    hist(z[,1], main="Sample mean Distribution  n=30", col = 'blue',
+         xlim=c(40, 160), xlab="Sample Mean")
+
+```
+
+
+## Application
+- Plotting both population and sample distribution will provide a qualitative means to conduct hypothesis testing.
+- The above plots will also help in qualitatively determining sample sizes for various studies based on population parameters and required confidence level.
+
+# Thank You

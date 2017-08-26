@@ -1,0 +1,27 @@
+---
+title: "Earth Quakes over the world in last 30 days"
+author: "Gowtham Talluru"
+date: "June 20, 2017"
+output: html_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(readr)
+quakes<- read_csv("D:/Coursera/Data Science/Data Products/Data Products/all_month.csv")
+```
+
+```{r, message=FALSE, width=1000}
+library(leaflet)
+quakes%>% leaflet() %>% addTiles() %>%
+  addCircles(weight= quakes$mag, 
+             popup=c(quakes$mag, quakes$depth),
+#             clusterOptions=markerClusterOptions()
+             col=ifelse(quakes$mag>5, "red", "green")) %>%
+  addLegend(labels = c("Mag > 5", "Mag<5"), colors= c("red", "green"))
+```
+
+
